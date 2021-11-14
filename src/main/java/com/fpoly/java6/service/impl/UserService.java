@@ -4,31 +4,41 @@ import com.fpoly.java6.domain.Role;
 import com.fpoly.java6.domain.User;
 import com.fpoly.java6.repo.RoleRepository;
 import com.fpoly.java6.repo.UserRepository;
+import com.fpoly.java6.service.IUserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 @Slf4j
-public class UserService implements com.fpoly.java6.service.UserService {
-    private UserRepository userRepo;
-    private RoleRepository roleRepo;
+public class UserService implements IUserService {
+    private final UserRepository userRepo;
+    private final RoleRepository roleRepo;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
-    public User saveUseṛ(User user) {
+    public User saveUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
         log.info("Saving new user {} to the database", user.getName());
         return userRepo.save(user);
     }
 
     @Override
-    public Role saveRolẹ(Role role) {
+    public Role saveRole(Role role) {
         log.info("Saving new role {} to the database", role.getName());
+
         return roleRepo.save(role);
     }
 
