@@ -37,14 +37,13 @@ public class CustomerAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         System.out.println("on filter");
         System.out.println(request.getRequestURI());
-        if(request.getRequestURI().equals("/api/login")){
+        if(request.getRequestURI().equals("/api/login") || request.getRequestURI().equals("/api/token/refresh")){
             filterChain.doFilter(request, response);
         } else {
             String authorizationHeader = request.getHeader("Authorization");
             if(authorizationHeader != null && authorizationHeader.startsWith("Bearer ")){
                 try {
                     String token = authorizationHeader.substring("Bearer ".length());
-                    System.out.println(token);
                     Algorithm algorithm = Algorithm.HMAC256("secret".getBytes());
                     JWTVerifier verifier = JWT.require(algorithm).build();
                     DecodedJWT decoderJWT = verifier.verify(token);
